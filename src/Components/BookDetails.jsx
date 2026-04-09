@@ -1,103 +1,118 @@
-import React, { use, useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { useLoaderData, useParams } from 'react-router';
 import { BokContext } from './BookContext';
 import { toast } from 'react-toastify';
 
-
-
 const BookDetails = () => {
-    const {id}=useParams();
-    
+  const { id } = useParams();
+  const books = useLoaderData();
+  const expectedBook = books.find(book => book.bookId == id);
+  const { storedBooks, setStoredBooks, wishBooks, setWishBooks } = useContext(BokContext);
 
-let books=useLoaderData();
-
-const expectedBook=books.find(book=> book.bookId==id);
-
-  let { storedBooks, setStoredBooks, wishBooks, setWishBooks } = useContext(BokContext);
-
-const handleRead = () => {
-  if(wishBooks.some(book => book.bookId == expectedBook.bookId)){
-    toast.error('Book exists in Wishlist');
-    return;
-  }
-  if(storedBooks.some(book => book.bookId == expectedBook.bookId)){
-    toast.error('Already in Read list');
-    return;
-  }
- setStoredBooks([...storedBooks, expectedBook]);
-  toast.success(`'${expectedBook.bookName}' added to Read list`);
-}
-
-const handleWish = () => {
-  if(storedBooks.some(book => book.bookId == expectedBook.bookId)){
-    toast.error('Book exists in Read list');
-    return;
-  }
-  if(wishBooks.some(book => book.bookId == expectedBook.bookId)){
-    toast.error('Already in Wishlist');
-    return;
-  }
-  setWishBooks([...wishBooks, expectedBook]);
-  toast.success(`'${expectedBook.bookName}' added to Wishlist`);
-}
-
-
-
-    return (
-        <div>
-           
-                    <div className="card lg:card-side bg-base-100 shadow-sm w-[80%] mx-auto lg:w-[90%]">
-  <figure>
-    <img
-    className='w-[60%] h-[80%]'
-      src={expectedBook.image}
-      alt="Album" />
-  </figure>
-  <div className="card-body">
-    <h2 className="card-title">{expectedBook.bookName}</h2>
-    <p>By : {expectedBook.author}</p>
-    <hr />
-    <p className='text-[16px] font-semibold'>{expectedBook.category}</p>
-    <hr />
-    <p>Review : {expectedBook.review}</p>
-
-<div className='flex items-center gap-5'>
-    <h2 className='text-18px font-bold'>Tag</h2>
-    {
-expectedBook.tags.map((tag, index)=>
-<div key={index} className='text-green-500 font-bold text-[18px]'>
-    #{tag}
-</div>
-)
+  const handleRead = () => {
+    if (wishBooks.some(book => book.bookId == expectedBook.bookId)) {
+      toast.error('Book exists in Wishlist');
+      return;
     }
-</div>
-<hr />
+    if (storedBooks.some(book => book.bookId == expectedBook.bookId)) {
+      toast.error('Already in Read list');
+      return;
+    }
+    setStoredBooks([...storedBooks, expectedBook]);
+    toast.success(`'${expectedBook.bookName}' added to Read list`);
+  };
 
-<div className='flex items-center gap-8 '>
-    <div className='space-y-2'>
-        <p>Number of Pages:</p>
-        <p>Publisher:</p>
-        <p>Year of Publishing:</p>
-        <p>Rating:</p>
-    </div>
+  const handleWish = () => {
+    if (storedBooks.some(book => book.bookId == expectedBook.bookId)) {
+      toast.error('Book exists in Read list');
+      return;
+    }
+    if (wishBooks.some(book => book.bookId == expectedBook.bookId)) {
+      toast.error('Already in Wishlist');
+      return;
+    }
+    setWishBooks([...wishBooks, expectedBook]);
+    toast.success(`'${expectedBook.bookName}' added to Wishlist`);
+  };
 
-    <div className='space-y-2'>
-        <p>{expectedBook.totalPages}</p>
-        <p>{expectedBook.publisher}</p>
-        <p>{expectedBook.yearOfPublishing}</p>
-        <p>{expectedBook.rating}</p>
-    </div>
-</div>
+  return (
+    <div className="py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-6 bg-base-100 shadow-md rounded-xl overflow-hidden">
 
-    <div className="card-actions justify-end">
-      <button className="btn" onClick={handleRead}>Read</button>
-      <button onClick={handleWish} className="btn btn-accent">Wishlist</button>
-    </div>
-  </div>
-</div>
-               
+        {/* Book Cover */}
+        <figure className="w-full lg:w-72 xl:w-80 shrink-0 bg-base-200 flex items-center justify-center p-6">
+          <img
+            src={expectedBook.image}
+            alt={expectedBook.bookName}
+            className="w-full max-w-[220px] lg:max-w-full object-cover rounded-lg shadow"
+          />
+        </figure>
+
+        {/* Book Info */}
+        <div className="flex flex-col gap-4 p-6 flex-1">
+          <h2 className="text-2xl font-bold">{expectedBook.bookName}</h2>
+          <p className="text-base text-base-content/70">By: <span className="font-medium text-base-content">{expectedBook.author}</span></p>
+
+          <hr className="border-base-300" />
+
+          <p className="text-sm font-semibold uppercase tracking-wide text-primary">{expectedBook.category}</p>
+
+          <hr className="border-base-300" />
+
+          <p className="text-sm text-base-content/80 leading-relaxed">
+            <span className="font-semibold text-base-content">Review: </span>{expectedBook.review}
+          </p>
+
+          {/* Tags */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-semibold">Tags:</span>
+            {expectedBook.tags.map((tag, index) => (
+              <span
+                key={index}
+                className="bg-green-50 text-green-600 text-xs font-semibold px-3 py-1 rounded-full border border-green-200"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+
+          <hr className="border-base-300" />
+
+          {/* Meta Info Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: 'Pages', value: expectedBook.totalPages },
+              { label: 'Publisher', value: expectedBook.publisher },
+              { label: 'Year', value: expectedBook.yearOfPublishing },
+              { label: 'Rating', value: `${expectedBook.rating} ★` },
+            ].map(({ label, value }) => (
+              <div key={label} className="bg-base-200 rounded-lg p-3 flex flex-col gap-1">
+                <span className="text-xs text-base-content/60 font-medium uppercase tracking-wide">{label}</span>
+                <span className="text-sm font-semibold">{value}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-2 mt-auto">
+            <button
+              className="btn btn-outline flex-1 sm:flex-none"
+              onClick={handleRead}
+            >
+              Mark as Read
+            </button>
+            <button
+              className="btn btn-accent flex-1 sm:flex-none"
+              onClick={handleWish}
+            >
+              Add to Wishlist
+            </button>
+          </div>
         </div>
-    );
+
+      </div>
+    </div>
+  );
 };
 
 export default BookDetails;
