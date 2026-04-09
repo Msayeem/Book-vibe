@@ -2,7 +2,7 @@ import React, { use } from 'react';
 import { FaRegStar } from 'react-icons/fa';
 import BookCard from './BookCard';
 
-let fetch1=fetch('/booksData.json')
+let fetch1=fetch(`${import.meta.env.BASE_URL}booksData.json`)
     .then(x=>x.json())
 
 const AllBooks = () => {

@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
+import { createHashRouter } from "react-router";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import Root from './Components/Root.jsx';
@@ -11,7 +12,7 @@ import BookDetails from './Components/BookDetails.jsx';
 import BookContext from './Components/BookContext.jsx';
 import { ToastContainer } from 'react-toastify';
 
-const router=createBrowserRouter([
+const router=createHashRouter([
 
 {path:'/',
   Component:Root,
@@ -27,7 +28,7 @@ Component:Home
   },
   {
     path:'/bookDetails/:id',
-    loader:()=>fetch('/booksData.json'),
+    loader:()=>fetch(`${import.meta.env.BASE_URL}booksData.json`),
     Component:BookDetails
   }
 
